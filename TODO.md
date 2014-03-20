@@ -8,4 +8,7 @@ Future Work
 * Provide more flexibility for specifying paths/routes to apply delays on.
 * Provide more options for delay invervals (e.g. a fixed set of values).
 * Provide option to use different interval for different parts of the site.
+    * Nested protection (e.g. interval X for processing cookies/session and interval Y for application)
+    * Different protection in different places (e.g. interval X for /users/ and interval Y for /media/)
+    * Combinations thereof!
 
