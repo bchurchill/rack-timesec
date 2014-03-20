@@ -86,9 +86,7 @@ assets are served statically, we want to exclude certain URLs which
 are not sensitive to timint attacks. For example, one can exclude all
 paths starting with /assets/ as follows:
 
-[code]
-config.middleware.swap Rack::Runtime, Rack::TimeSec, :except => [\^/assets\//]
-[/code]
+    config.middleware.swap Rack::Runtime, Rack::TimeSec, :except => [\^/assets\//]
 
 
 Limitations
