@@ -57,6 +57,12 @@ Rack::Runtime.
 
         config.middleware.insert_after Rack::Runtime, Rack::TimeSec
 
+3.  Configure (described below)
+
+4. That's it! AFAIK, there are no dependencies. In principle this
+should work with just about any rack application, although it's only
+been tested with rails 4. It should also work with older versions of
+ruby, but this hasn't been tested either.
 
 Configure
 ---------
