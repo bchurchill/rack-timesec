@@ -15,20 +15,25 @@ In a timing attack an attacker times how long a query takes to disclose sensitiv
 An authoratative description of timing attacks on web applications may be found in "Exposing Private Information
 by Timing Web Applications" by Bortz, Boneh and Nandy.  See https://crypto.stanford.edu/~dabo/papers/webtiming.pdf.
 
-Defense
--------
+Overview
+--------
 
-This gem implements a defense that delays requests so that they take a multiple of 100ms to complete.  The value of 100ms is configurable; increasing it causes the site to respond slower, while decreasing it makes the application more vulnerable.  This parameter must be tuned for each application.
+This gem implements a defense described in the paper mentioned above.  It delays requests so that they take a multiple of 100ms to complete.  The value of 100ms is configurable; increasing it causes the site to respond slower, while decreasing it makes the application more vulnerable.  This parameter must be tuned for each application.
+
+(Note that random delays have been shown not to prevent these attacks, which is why they aren't implemented here)
 
 Install
 -------
 
-1. Update your gemfile
-2. Add the middleware in the application.rb file.  The location in the middleware stack is important.  You want TimeSec to run before any sensitive operations, such as working with the session cookie, or authentication/authorization.  For security, it's best not to use Rack::Runtime anywhere, because this would help a timing attacker.  If you do use Rack::Runtime anyway, then Rack::TimeSec [b]must[/b] follow it, or you will have no protection.  [em] In general, it's best to setup Rack::TimeSec to run sooner rather than later. [/em]  Therefore, my recommendation is to use the following in application.rb, which replaces Rack::Runtime with Rack::TimeSec
+1. Update your gemfile.  For now, use
 
-[code]
-config.middleware.swap Rack::Runtime, Rack::TimSec
-[/code]
+    gem 'rack-timesec', :git => 'git://github.com/bchurchill/rack-timesec.git'
+
+2. Add the middleware in the application.rb file.  The location in the middleware stack is important.  You want TimeSec to run before any sensitive operations, such as working with the session cookie, or authentication/authorization.  For security, it's best not to use Rack::Runtime anywhere, because this would help a timing attacker.  If you use Rack::Runtime anyway, then Rack::TimeSec **must** follow it, or you will have no protection.  *In general, it's best to setup Rack::TimeSec to run sooner rather than later.*  Therefore, my recommendation is to use the following in application.rb, which replaces Rack::Runtime with Rack::TimeSec
+
+
+    config.middleware.swap Rack::Runtime, Rack::TimSec
+
 
 Configure
 ---------
@@ -45,10 +50,7 @@ better performance. The default setting is 0.1 seconds (100ms). This
 seems to work well for many sites. To set this value to 0.2 seconds
 (200ms), you would use:
 
-[code]
-config.middleware.swap Rack::Runtime, Rack::TimeSec, :interval => 0.2
-[/code]
-
+    config.middleware.swap Rack::Runtime, Rack::TimeSec, :interval => 0.2
 
 
 To test, you should do some sensitive operations that take different
@@ -93,3 +95,16 @@ Limitations
 -----------
 
 Please read http://tenderlovemaking.com/2011/03/03/rack-api-is-awkward.html about how my method could miscalculate the time that a response takes.  I'm also not sure about chuncked responses and if they'll be handled properly.  If someone wants to look into this, that would be superb!
+
+Contributions
+-------------
+
+If you have a security bug report, please let me know confidentially.  It's best to email me at berkeley@berkeleychurchill.com.  You may download my GPG key from https://www.berkeleychurchill.com/contact.php.  Your contribution will be publicly acknowledged once it's fixed (if you like).
+
+Non-security bugs can be posted on the github tracker.  If you're in doubt, consider it a security bug.
+
+If you would like to contribute, please look into the TODO.md file for thoughts on what to do (other contributions are welcome too).  Please let me know if you start working on something so effort isn't duplicated.  Pull requests are welcomed.
+
+### Authors & Contributors
+
+Berkeley Churchill
