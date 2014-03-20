@@ -37,7 +37,7 @@ Install
 1. Update your gemfile.  For now, use
 
 
-    gem 'rack-timesec', :git => 'git://github.com/bchurchill/rack-timesec.git'
+        gem 'rack-timesec', :git => 'git://github.com/bchurchill/rack-timesec.git'
 
 
 2. Add the middleware in the application.rb file. The location in
@@ -55,7 +55,7 @@ in application.rb, which places Rack::TimeSec immediately after
 Rack::Runtime.
 
 
-    config.middleware.insert_after Rack::Runtime, Rack::TimeSec
+        config.middleware.insert_after Rack::Runtime, Rack::TimeSec
 
 
 Configure
