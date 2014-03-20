@@ -27,12 +27,14 @@ Install
 
 1. Update your gemfile.  For now, use
 
+
     gem 'rack-timesec', :git => 'git://github.com/bchurchill/rack-timesec.git'
 
-2. Add the middleware in the application.rb file.  The location in the middleware stack is important.  You want TimeSec to run before any sensitive operations, such as working with the session cookie, or authentication/authorization.  For security, it's best not to use Rack::Runtime anywhere, because this would help a timing attacker.  If you use Rack::Runtime anyway, then Rack::TimeSec **must** follow it, or you will have no protection.  *In general, it's best to setup Rack::TimeSec to run sooner rather than later.*  Therefore, my recommendation is to use the following in application.rb, which replaces Rack::Runtime with Rack::TimeSec
+
+2. Add the middleware in the application.rb file.  The location in the middleware stack is important.  You want TimeSec to run before any sensitive operations, such as working with the session cookie, or authentication/authorization.  For security, it's best not to use Rack::Runtime anywhere, because this would help a timing attacker.  However, there are some dependencies on Rack::Runtime in parts of rails.  If you use Rack::Runtime anyway, then Rack::TimeSec **must** follow it, or attackers will be given timing information for free (the protection will be useless, but it will apear to work superficially).  *In general, it's best to setup Rack::TimeSec to run sooner rather than later.*  Therefore, my recommendation is to use the following in application.rb, which places Rack::TimeSec immediately after Rack::Runtime.
 
 
-    config.middleware.swap Rack::Runtime, Rack::TimSec
+    config.middleware.insert_after Rack::Runtime, Rack::TimeSec
 
 
 Configure
@@ -50,8 +52,7 @@ better performance. The default setting is 0.1 seconds (100ms). This
 seems to work well for many sites. To set this value to 0.2 seconds
 (200ms), you would use:
 
-    config.middleware.swap Rack::Runtime, Rack::TimeSec, :interval => 0.2
-
+    config.middleware.insert_after Rack::Runtime, Rack::TimeSec, :interval => 0.2
 
 To test, you should do some sensitive operations that take different
 amounts of time on the server and ensure they look the same to a
@@ -63,9 +64,9 @@ interval.
 
 You should also perform this test when the server is at minimum load,
 typical load, and maximum load. The load on the server affects the
-response times, and so your interval should work in all cases.
+response times, and so your interval should work in all cases.  Additionally, it may be necessary to use different values in different environments.  For example, in moving from development to production the database backend might have a very different latency.
 
-Note that a greater interval doesn't [em]always[/em] provide better
+Note that a greater interval doesn't *always* provide better
 security. For example, if you have a sensitive operation that takes
 120ms or 170ms on the server, then using an interval of 100 would
 entirely mask this difference. However, an interval of 150 would cause
@@ -86,7 +87,7 @@ assets are served statically, we want to exclude certain URLs which
 are not sensitive to timint attacks. For example, one can exclude all
 paths starting with /assets/ as follows:
 
-    config.middleware.swap Rack::Runtime, Rack::TimeSec, :except => [\^/assets\//]
+    config.middleware.insert_after Rack::Runtime, Rack::TimeSec, :except => [/^\/assets\//]
 
 
 Limitations
