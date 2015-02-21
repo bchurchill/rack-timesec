@@ -112,7 +112,7 @@ setting it to one second.
 
 For performance reasons, especially in a development environment where
 assets are served statically, we want to exclude certain URLs which
-are not sensitive to timint attacks. For example, one can exclude all
+are not sensitive to timing attacks. For example, one can exclude all
 paths starting with /assets/ as follows:
 
 
